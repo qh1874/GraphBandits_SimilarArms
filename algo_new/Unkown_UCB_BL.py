@@ -89,7 +89,7 @@ def Unkown_DUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
         else:
             j1=arm_ind[np.argmax(c_add_optimal[arm_ind])]
             temp_nei=np.array(list(neighbor[j1]))
-            j=temp_nei[np.argmax(c_sub[temp_nei])]
+            j=temp_nei[np.argmax(c_add[temp_nei])]
         
         if t%10000==0:
             a=0
@@ -124,6 +124,7 @@ def Unkown_DUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
 @jit(nopython=True)
 def Unkown_CUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
     np.random.seed(seed)
+    tau=int(5*np.sqrt(T*np.log(T)))
     N=np.zeros(T,dtype='int64')
     X_hat=np.zeros(T)
     c=np.zeros(T)
@@ -141,43 +142,69 @@ def Unkown_CUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
     neighbor=deepcopy(neighbor_init,len(neighbor_init))
     arms_num=0
     cons=np.sqrt(np.log(np.sqrt(2)*T**2))
-    #for t in tqdm(range(T),desc="C-UCB: "):
-    for t in range(T):
+    #for t in tqdm(range(T),desc="Double-UCB: "):
+    t=0
+    armsnum_temp=0
+    flag=-1
+    while t<T:
+    
+        if (t+1)%tau==0:
+            #print("t= ",t)
+            tt=arms_num-armsnum_temp  #(t//tau)*tau
+            s_temp=np.ones(tt,dtype='int64')
+            choose_list=list(arm_ind)
+            for i in choose_list:
+                neigh_temp1=set([ i_tmp for i_tmp in neighbor[i] if i_tmp>=armsnum_temp])
+                #neigh_temp1=set(neighbor[i])
+                for k1 in neigh_temp1:
+                    if  s_temp[k1-armsnum_temp]!=0:
+                        s_temp[k1-armsnum_temp]=0
+            while sum(s_temp)!=0:
+                index_temp=select_first_geq_zero(s_temp)
+                choose_list.append(index_temp+armsnum_temp)
+                s_temp[int(index_temp)]=0
+                neigh_temp2=set([i_tmp for i_tmp in neighbor[index_temp+armsnum_temp] if i_tmp>=armsnum_temp])
+                #neigh_temp2=set(neighbor[index_temp+tt])
+                for k2 in neigh_temp2:
+                    if s_temp[k2-armsnum_temp]!=0:
+                        s_temp[k2-armsnum_temp]=0
+            arm_ind=np.array(choose_list)
+            flag=len(choose_list)
+            armsnum_temp=arms_num
         
-        
-        arms_num += 1
-        N[arms_num-1]=0
-        
-        flag=1
-        neigh1=neighbor[arms_num-1]
-        for arm in set(neigh1):
-            if arm in arm_ind:
-                flag = 0                    
-            if (arms_num-1) not in neighbor[arm]:
-                neighbor[arm].append(arms_num-1)
-        
-        if flag==1:
-            #arm_ind.append(arms_num-1)
-            arm_ind=np.append(arm_ind,arms_num-1)
+        if change_arms_list[t]==1:
+            arms_num += 1
+            N[arms_num-1]=0
+            
+            neigh1=neighbor[arms_num-1]
+            for arm in set(neigh1):                  
+                if (arms_num-1) not in neighbor[arm]:
+                    neighbor[arm].append(arms_num-1)
+                    
             X_hat_optimal[arms_num-1]=0
             c_add_optimal[arms_num-1]=cons
             N_optimal[arms_num-1] =0
-            
-        X_hat[arms_num-1]=0
-        c_add[arms_num-1]=cons
-        c_sub[arms_num-1]=-cons
-
+            X_hat[arms_num-1]=0
+            c_add[arms_num-1]=cons
+            c_sub[arms_num-1]=-cons
         
-        j1=arm_ind[np.argmax(c_add_optimal[arm_ind])]
-        temp_nei=np.array(list(neighbor[j1]))
-        j=temp_nei[np.argmax(c_sub[temp_nei])]
-        #j=neighbor[j1][np.argmax(c_sub[neighbor[j1]])]
-        #j=neighbor[j1][np.argmax(X_hat[neighbor[j1]])]
+        if t+1<tau:
+            j=min(t,arms_num-1)
+        elif flag>=0:
+            flag=flag-1
+            j=choose_list[flag]
+        else:
+            j1=arm_ind[np.argmax(c_add_optimal[arm_ind])]
+            temp_nei=np.array(list(neighbor[j1]))
+            j=temp_nei[np.argmax(c_sub[temp_nei])]
+        
         if t%10000==0:
             a=0
+      
         neigh=np.array(list(neighbor[j]))
         ch[t] = j 
         expect_reward[t] = reward_mat[j,0]
+      
         #update
         r_jj=get_reward(reward_mat,neigh,arm_type)
         if len(neigh)==1:
@@ -196,4 +223,6 @@ def Unkown_CUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
         N_optimal[arm_ind] = N[arm_ind]       
         c_add_optimal[arm_ind]=c_add[arm_ind]
         
+        t += 1
+      
     return reward, expect_reward, ch
