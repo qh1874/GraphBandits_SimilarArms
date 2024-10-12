@@ -84,11 +84,11 @@ def generate_data(arm_type,K,seed):
         reward_mat[:,0]=np.random.randn(K)
     elif arm_type==1: #Bernoulli
         reward_mat[:,1] = np.random.uniform(0,1,K)
-        #reward_mat[:,0]=np.random.uniform(0,1,K)
-        
+        #### uniform(0,1)
+        reward_mat[:,0]=np.random.uniform(0,1,K)
         #### p(x)=2*x-x^2 F(x)=1-(1-x)^2  ####
-        x1=np.random.uniform(0,1,K)
-        reward_mat[:,0]=1-np.sqrt(1-x1) 
+        # x1=np.random.uniform(0,1,K)
+        # reward_mat[:,0]=1-np.sqrt(1-x1) 
         
         ##### Truncnorm  #####
         #reward_mat[:,0]=truncnorm(-0.5,0.5,0.5,1).rvs(K)
@@ -105,10 +105,10 @@ def generate_data(arm_type,K,seed):
 def get_reward_distribution_ball(arm_type,T,K,ep,seed):
     
     np.random.seed(seed)
-    change_arms_list=np.zeros(T,dtype='int32')
-    change_arms_list[0]=1
+    change_arms_list=np.zeros(T,dtype='int64')
+    #change_arms_list[0]=1
     #change_arms_list[0:10]=1
-    change_arms_list[np.arange(1,T,int(T/K))]=1
+    change_arms_list[np.arange(0,T,int(T/K))]=1
     
     #generate optimal rewards
     Ksum=int(np.sum(change_arms_list))
@@ -301,7 +301,7 @@ def get_reward(r_mat,j,arm_type):
 def deepcopy(A_list,n):
     B_list=List()
     for i in range(n):
-        B_list.append(List.empty_list(numba.types.int32))
+        B_list.append(List.empty_list(numba.types.int64))
         m=len(A_list[i])
         for j in range(m): 
             B_list[i].append(A_list[i][j])

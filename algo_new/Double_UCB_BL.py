@@ -7,13 +7,13 @@ from numba import jit
 @jit(nopython=True)
 def Double_UCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
     np.random.seed(seed)
-    N=np.zeros(T,dtype='int32')
+    N=np.zeros(T,dtype='int64')
     X_hat=np.zeros(T)
     c=np.zeros(T)
     c_add_optimal=np.zeros(T)
     c_add=np.zeros(T)
     c_sub=np.zeros(T)
-    N_optimal=np.zeros(T,dtype='int32')
+    N_optimal=np.zeros(T,dtype='int64')
     
     arm_ind=np.array([0])
     X_hat_optimal=np.zeros(T)
@@ -81,19 +81,19 @@ def Double_UCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
         N_optimal[arm_ind] = N[arm_ind]       
         c_add_optimal[arm_ind]=c_add[arm_ind]
       
-    return reward, expect_reward, ch
+    return reward, expect_reward, ch,len(arm_ind)
 
 
 @jit(nopython=True)
 def C_UCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
     np.random.seed(seed)
-    N=np.zeros(T,dtype='int32')
+    N=np.zeros(T,dtype='int64')
     X_hat=np.zeros(T)
     c=np.zeros(T)
     c_add_optimal=np.zeros(T)
     c_add=np.zeros(T)
     c_sub=np.zeros(T)
-    N_optimal=np.zeros(T,dtype='int32')
+    N_optimal=np.zeros(T,dtype='int64')
     
     arm_ind=np.array([0])
     X_hat_optimal=np.zeros(T)
