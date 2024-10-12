@@ -17,7 +17,7 @@ def select_first_geq_zero(L):
 @jit(nopython=True)
 def Unkown_DUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
     np.random.seed(seed)
-    tau=int(5*np.sqrt(T*np.log(T)))
+    tau=int(np.sqrt(T*2))
     N=np.zeros(T,dtype='int64')
     X_hat=np.zeros(T)
     c=np.zeros(T)
