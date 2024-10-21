@@ -85,10 +85,10 @@ def generate_data(arm_type,K,seed):
     elif arm_type==1: #Bernoulli
         reward_mat[:,1] = np.random.uniform(0,1,K)
         #### uniform(0,1)
-        reward_mat[:,0]=np.random.uniform(0,1,K)
+        #reward_mat[:,0]=np.random.uniform(0,1,K)
         #### p(x)=2*x-x^2 F(x)=1-(1-x)^2  ####
-        # x1=np.random.uniform(0,1,K)
-        # reward_mat[:,0]=1-np.sqrt(1-x1) 
+        x1=np.random.uniform(0,1,K)
+        reward_mat[:,0]=1-np.sqrt(1-x1) 
         
         ##### Truncnorm  #####
         #reward_mat[:,0]=truncnorm(-0.5,0.5,0.5,1).rvs(K)

@@ -17,7 +17,7 @@ def select_first_geq_zero(L):
 @jit(nopython=True)
 def Unkown_DUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
     np.random.seed(seed)
-    tau=int(np.sqrt(T*2))
+    tau=int(10*np.sqrt(T*np.log(T)))
     N=np.zeros(T,dtype='int64')
     X_hat=np.zeros(T)
     c=np.zeros(T)
@@ -39,9 +39,10 @@ def Unkown_DUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
     t=0
     armsnum_temp=0
     flag=-1
+    tau0=50
     while t<T:
     
-        if (t+1)%tau==0:
+        if (t+1)%tau0==0:
             #print("t= ",t)
             tt=arms_num-armsnum_temp  #(t//tau)*tau
             s_temp=np.ones(tt,dtype='int64')
@@ -64,6 +65,11 @@ def Unkown_DUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
             arm_ind=np.array(choose_list)
             flag=len(choose_list)
             armsnum_temp=arms_num
+            
+            if  tau0*2<tau:
+                tau0=tau0*2
+            else:
+                tau0=tau
         
         if change_arms_list[t]==1:
             arms_num += 1
@@ -81,7 +87,7 @@ def Unkown_DUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
             c_add[arms_num-1]=cons
             c_sub[arms_num-1]=-cons
         
-        if t+1<tau:
+        if t+1<50:
             j=min(t,arms_num-1)
         elif flag>=0:
             flag=flag-1
@@ -124,7 +130,7 @@ def Unkown_DUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
 @jit(nopython=True)
 def Unkown_CUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
     np.random.seed(seed)
-    tau=int(5*np.sqrt(T*np.log(T)))
+    tau=int(10*np.sqrt(T*np.log(T)))
     N=np.zeros(T,dtype='int64')
     X_hat=np.zeros(T)
     c=np.zeros(T)
@@ -146,9 +152,10 @@ def Unkown_CUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
     t=0
     armsnum_temp=0
     flag=-1
+    tau0=50
     while t<T:
     
-        if (t+1)%tau==0:
+        if (t+1)%tau0==0:
             #print("t= ",t)
             tt=arms_num-armsnum_temp  #(t//tau)*tau
             s_temp=np.ones(tt,dtype='int64')
@@ -171,6 +178,11 @@ def Unkown_CUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
             arm_ind=np.array(choose_list)
             flag=len(choose_list)
             armsnum_temp=arms_num
+            
+            if  tau0*2<tau:
+                tau0=tau0*2
+            else:
+                tau0=tau
         
         if change_arms_list[t]==1:
             arms_num += 1
@@ -187,8 +199,8 @@ def Unkown_CUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
             X_hat[arms_num-1]=0
             c_add[arms_num-1]=cons
             c_sub[arms_num-1]=-cons
-        
-        if t+1<tau:
+            
+        if t+1<50:
             j=min(t,arms_num-1)
         elif flag>=0:
             flag=flag-1
@@ -224,5 +236,7 @@ def Unkown_CUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
         c_add_optimal[arm_ind]=c_add[arm_ind]
         
         t += 1
+    
+           
       
     return reward, expect_reward, ch
