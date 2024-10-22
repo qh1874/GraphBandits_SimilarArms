@@ -14,6 +14,7 @@ def select_first_geq_zero(L):
             return i
     
 
+tau00=5
 @jit(nopython=True)
 def Unkown_DUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
     np.random.seed(seed)
@@ -39,7 +40,7 @@ def Unkown_DUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
     t=0
     armsnum_temp=0
     flag=-1
-    tau0=50
+    tau0=tau00
     while t<T:
     
         if (t+1)%tau0==0:
@@ -87,7 +88,7 @@ def Unkown_DUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
             c_add[arms_num-1]=cons
             c_sub[arms_num-1]=-cons
         
-        if t+1<50:
+        if t+1<tau00:
             j=min(t,arms_num-1)
         elif flag>=0:
             flag=flag-1
@@ -152,7 +153,7 @@ def Unkown_CUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
     t=0
     armsnum_temp=0
     flag=-1
-    tau0=50
+    tau0=tau00
     while t<T:
     
         if (t+1)%tau0==0:
@@ -200,7 +201,7 @@ def Unkown_CUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
             c_add[arms_num-1]=cons
             c_sub[arms_num-1]=-cons
             
-        if t+1<50:
+        if t+1<tau00:
             j=min(t,arms_num-1)
         elif flag>=0:
             flag=flag-1
