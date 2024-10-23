@@ -41,7 +41,7 @@ if __name__ == '__main__':
         print("iter = {}".format(i))
         reward_mat, r_opt, neighbor_init,change_arms_list = get_reward_distribution_ball(arm_type,T, K, epsilon, i+seed)
     
-        print("arms num: {} ,epsilon = {}".format(K,epsilon))
+        print("arms num: {}, epsilon = {}".format(K,epsilon))
         if arm_type==0:
             print("Gaussian arms")
         else:
