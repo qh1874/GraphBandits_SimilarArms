@@ -11,8 +11,6 @@ from param import param
 from algo_new.Double_UCB_BL import Double_UCB_BL,C_UCB_BL
 from algo_new.Unkown_UCB_BL import Unkown_DUCB_BL,Unkown_CUCB_BL
 
-import os
-os.environ['PYDEVD_WARN_SLOW_RESOLVE_TIMEOUT'] = '2.0'
 
 
 if __name__ == '__main__':
