@@ -18,7 +18,7 @@ tau00=1
 @jit(nopython=True)
 def Unkown_DUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
     np.random.seed(seed)
-    tau=int(30*np.sqrt(T))
+    tau=int(50*np.sqrt(T))
     N=np.zeros(T,dtype='int64')
     X_hat=np.zeros(T)
     c=np.zeros(T)
@@ -131,7 +131,7 @@ def Unkown_DUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
 @jit(nopython=True)
 def Unkown_CUCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
     np.random.seed(seed)
-    tau=int(30*np.sqrt(T))
+    tau=int(50*np.sqrt(T))
     N=np.zeros(T,dtype='int64')
     X_hat=np.zeros(T)
     c=np.zeros(T)
