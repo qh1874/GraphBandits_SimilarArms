@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from scipy import stats as st
 import statsmodels.stats.api as sms
 import time
+from datetime import datetime
 
 from aux_func import get_reward_distribution_ball
 from param import param
@@ -34,8 +35,11 @@ if __name__ == '__main__':
     dpr4 = np.zeros((iter, T))
 
     seed = 0
-    
+    current_time = datetime.now()
+    formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
+    print("datetime:", formatted_time)
     for i in range(iter):
+        t11=time.time()
         print("iter = {}".format(i))
         reward_mat, r_opt, neighbor_init,change_arms_list = get_reward_distribution_ball(arm_type,T, K, epsilon, i+seed)
     
@@ -50,6 +54,8 @@ if __name__ == '__main__':
         rr1, e_r1, ch_p1,num_ind =  Double_UCB_BL(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
         print("num_ind:",num_ind)
         rr2, e_r2, ch_p2 = C_UCB_BL(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
+        t22=time.time()
+        print("iter = {}, time  = {} ".format(i,t22 - t11))
         
         dpr1[i, :] = (r_opt - e_r1).cumsum()
         dpr2[i, :] = (r_opt - e_r2).cumsum()
