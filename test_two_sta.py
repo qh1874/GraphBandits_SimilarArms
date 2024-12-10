@@ -21,6 +21,7 @@ if __name__ == '__main__':
     
     color=['m','c','g']
     color_index=0
+    saved=True
     t1 = time.time()
     for epsilon in [0.1,0.2]:
         
@@ -31,37 +32,50 @@ if __name__ == '__main__':
         dpr2 = np.zeros((iter, T))
 
         seed = 0
-        
-        for i in range(iter):
-            print("iter = {}".format(i))
-            reward_mat, r_opt, neighbor_init,change_arms_list = get_reward_distribution(arm_type,T, K, epsilon, i+seed)
-        
-            print("arms num: {} ,epsilon = {}".format(K,epsilon))
-            if arm_type==0:
-                print("Gaussian arms")
-                p=np.sqrt(2)*(2*st.norm.cdf(epsilon/np.sqrt(2))-1)
-            else:
-                print("Bernoulli arms")
-                p=1-(1-epsilon)**2
-            rr1, e_r1, ch_p1 =  UCB_N(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
+        if saved==False:
+            for i in range(iter):
+                print("iter = {}".format(i))
+                reward_mat, r_opt, neighbor_init,change_arms_list = get_reward_distribution(arm_type,T, K, epsilon, i+seed)
             
-            reward_mat, r_opt, neighbor_init,change_arms_list = get_reward_distribution_native(arm_type,T, K, p, i+seed)
-            rr2, e_r2, ch_p2 = UCB_N(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
+                print("arms num: {} ,epsilon = {}".format(K,epsilon))
+                if arm_type==0:
+                    print("Gaussian arms")
+                    p=np.sqrt(2)*(2*st.norm.cdf(epsilon/np.sqrt(2))-1)
+                else:
+                    print("Bernoulli arms")
+                    p=1-(1-epsilon)**2
+                rr1, e_r1, ch_p1 =  UCB_N(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
+                
+                reward_mat, r_opt, neighbor_init,change_arms_list = get_reward_distribution_native(arm_type,T, K, p, i+seed)
+                rr2, e_r2, ch_p2 = UCB_N(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
+                
+                dpr1[i, :] = (r_opt - e_r1).cumsum()
+                dpr2[i, :] = (r_opt - e_r2).cumsum()
             
-            dpr1[i, :] = (r_opt - e_r1).cumsum()
-            dpr2[i, :] = (r_opt - e_r2).cumsum()
+                r1 += e_r1
+                r2 += e_r2
+                
+            r1 = r1 / iter
+            r2 = r2 / iter
         
-            r1 += e_r1
-            r2 += e_r2
-            
-        r1 = r1 / iter
-        r2 = r2 / iter
-    
-        cr1 = np.mean(dpr1, 0)
-        cr2 = np.mean(dpr2, 0)
-    
-        print("UCB-N-native: {}\nUCB-N-similar: {}".format(
-            cr1[-1],cr2[-1]))
+            cr1 = np.mean(dpr1, 0)
+            cr2 = np.mean(dpr2, 0)
+        
+            print("UCB-N-native: {}\nUCB-N-similar: {}".format(
+                cr1[-1],cr2[-1]))
+        
+        #save data
+        if saved==False:
+            np.save("data_test_two_sta/cr1_eps_{}_armtype_{}.npy".format(epsilon,arm_type),cr1)
+            np.save("data_test_two_sta/cr2_eps_{}_armtype_{}.npy".format(epsilon,arm_type),cr2)
+            np.save("data_test_two_sta/dpr1_eps_{}_armtype_{}.npy".format(epsilon,arm_type),dpr1)
+            np.save("data_test_two_sta/dpr2_eps_{}_armtype_{}.npy".format(epsilon,arm_type),dpr2)
+        #load data
+        if saved==True:
+            cr1=np.load("data_test_two_sta/cr1_eps_{}_armtype_{}.npy".format(epsilon,arm_type))
+            cr2=np.load("data_test_two_sta/cr2_eps_{}_armtype_{}.npy".format(epsilon,arm_type))
+            dpr1=np.load("data_test_two_sta/dpr1_eps_{}_armtype_{}.npy".format(epsilon,arm_type))
+            dpr2=np.load("data_test_two_sta/dpr2_eps_{}_armtype_{}.npy".format(epsilon,arm_type))
         
         #plt.figure(2)
         xx = np.arange(0, T)
@@ -85,8 +99,11 @@ if __name__ == '__main__':
         color_index += 1 
     t2 = time.time()
     print("time  = ", t2 - t1)
-    plt.legend()
+    plt.legend(fontsize=10)
     #plt.title("T : {}, arms : {}".format(T, K))
-    plt.xlabel("Rounds")
-    plt.ylabel("Regret")
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    #plt.tick_params(axis='both', which='major', labelsize=16)
+    plt.xlabel("Rounds",fontsize=16)
+    plt.ylabel("Regret",fontsize=16)
     plt.show()

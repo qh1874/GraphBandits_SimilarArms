@@ -19,7 +19,7 @@ if __name__ == '__main__':
     epsilon=param['epsilon']
     iter = param['iter']
     arm_type=param['arm_type'] #0: Gaussian, 1: Bernoulli
-    
+    saved=True
     r1 = 0
     r2 = 0
     r3 = 0
@@ -33,26 +33,27 @@ if __name__ == '__main__':
     dpr5 = np.zeros((iter, T))
     seed = 0
     t1 = time.time()
-    for i in range(iter):
-        print("iter = {}".format(i))
-        reward_mat, r_opt, neighbor_init,change_arms_list = get_reward_distribution(arm_type,T, K, epsilon, i+seed)
-        print("arms num: {} ,epsilon = {}".format(K,epsilon))
-        if arm_type==0:
-            print("Gaussian arms")
-        else:
-            print("Bernoulli arms")
-       
-        rr1, e_r1, ch_p1 =  Double_UCB(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
-        rr3, e_r3, ch_p3 =  UCB_N(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
-        rr2, e_r2, ch_p2 = C_UCB(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
-       
-        dpr1[i, :] = (r_opt - e_r1).cumsum()
-        dpr2[i, :] = (r_opt - e_r2).cumsum()
-        dpr3[i, :] = (r_opt - e_r3).cumsum()
-       
-        r1 += e_r1
-        r2 += e_r2
-        r3 += e_r3
+    if saved==False:
+        for i in range(iter):
+            print("iter = {}".format(i))
+            reward_mat, r_opt, neighbor_init,change_arms_list = get_reward_distribution(arm_type,T, K, epsilon, i+seed)
+            print("arms num: {} ,epsilon = {}".format(K,epsilon))
+            if arm_type==0:
+                print("Gaussian arms")
+            else:
+                print("Bernoulli arms")
+        
+            rr1, e_r1, ch_p1 =  Double_UCB(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
+            rr3, e_r3, ch_p3 =  UCB_N(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
+            rr2, e_r2, ch_p2 = C_UCB(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
+        
+            dpr1[i, :] = (r_opt - e_r1).cumsum()
+            dpr2[i, :] = (r_opt - e_r2).cumsum()
+            dpr3[i, :] = (r_opt - e_r3).cumsum()
+        
+            r1 += e_r1
+            r2 += e_r2
+            r3 += e_r3
       
     t2 = time.time()
     print("time  = ", t2 - t1)
@@ -66,6 +67,25 @@ if __name__ == '__main__':
   
     print("Double-UCB: {}\nC-UCB: {}\nUCB-N: {}".format(
         cr1[-1],cr2[-1], cr3[-1]))
+    
+    #save data
+    if saved==False:
+        np.save("data_test_stationary/cr1_armtype_{}.npy".format(arm_type),cr1)
+        np.save("data_test_stationary/cr2_armtype_{}.npy".format(arm_type),cr2)
+        np.save("data_test_stationary/cr3_armtype_{}.npy".format(arm_type),cr3)
+        np.save("data_test_stationary/dpr1_armtype_{}.npy".format(arm_type),dpr1)
+        np.save("data_test_stationary/dpr2_armtype_{}.npy".format(arm_type),dpr2)
+        np.save("data_test_stationary/dpr3_armtype_{}.npy".format(arm_type),dpr3)
+        
+    #load data
+    if saved==True:
+        cr1=np.load("data_test_stationary/cr1_armtype_{}.npy".format(arm_type))
+        cr2=np.load("data_test_stationary/cr2_armtype_{}.npy".format(arm_type))
+        cr3=np.load("data_test_stationary/cr3_armtype_{}.npy".format(arm_type))
+        dpr1=np.load("data_test_stationary/dpr1_armtype_{}.npy".format(arm_type))
+        dpr2=np.load("data_test_stationary/dpr2_armtype_{}.npy".format(arm_type))
+        dpr3=np.load("data_test_stationary/dpr3_armtype_{}.npy".format(arm_type))
+        
     
     plt.figure(2)
     xx = np.arange(0, T)
@@ -91,8 +111,10 @@ if __name__ == '__main__':
     plt.plot(xx1, cr3[xx1], '-bd', markerfacecolor='none', label='UCB-N')
     plt.fill_between(xx2, low_bound[xx2], high_bound[xx2], alpha=0.5)
 
-    plt.legend()
+    plt.legend(fontsize=10)
     #plt.title("T : {}, arms : {}".format(T, K))
-    plt.xlabel("Rounds")
-    plt.ylabel("Regret")
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.xlabel("Rounds",fontsize=16)
+    plt.ylabel("Regret",fontsize=16)
     plt.show()

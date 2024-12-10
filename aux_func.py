@@ -105,10 +105,10 @@ def generate_data(arm_type,K,seed):
 def get_reward_distribution_ball(arm_type,T,K,ep,seed):
     
     np.random.seed(seed)
-    change_arms_list=np.zeros(T,dtype='int32')
-    change_arms_list[0]=1
+    change_arms_list=np.zeros(T,dtype='int64')
+    #change_arms_list[0]=1
     #change_arms_list[0:10]=1
-    change_arms_list[np.arange(1,T,int(T/K))]=1
+    change_arms_list[np.arange(0,T,int(T/K))]=1
     
     #generate optimal rewards
     Ksum=int(np.sum(change_arms_list))
