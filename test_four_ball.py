@@ -14,12 +14,12 @@ from algo_new.Unkown_UCB_BL import Unkown_DUCB_BL,Unkown_CUCB_BL
 
 
 if __name__ == '__main__':
-
+    
     T = param['T']
     K = param['K']
     epsilon=param['epsilon']
     iter = param['iter']
-    arm_type=param['arm_type'] #0: Gaussian, 1: Bernoulli
+    arm_type=param['arm_type'] #0: Gaussian, 1: Bernoulli,2: Bernoulli (half-triangle distribution for Ballooning settings
     saved=True
     t1 = time.time()
   
@@ -78,7 +78,6 @@ if __name__ == '__main__':
     cr4 = np.mean(dpr4, 0)
 
     print("Double-UCB: {}\nC-UCB: {}\nU-DUCB: {}\nU-CUCB: {}".format(cr1[-1],cr2[-1],cr3[-1],cr4[-1]))
-    arm_type += 1
     #save data
     if saved==False:
         np.save("data_test_four_ball/cr1_armtype_{}.npy".format(arm_type),cr1)

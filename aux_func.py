@@ -84,18 +84,11 @@ def generate_data(arm_type,K,seed):
         reward_mat[:,0]=np.random.randn(K)
     elif arm_type==1: #Bernoulli
         reward_mat[:,1] = np.random.uniform(0,1,K)
-        #reward_mat[:,0]=np.random.uniform(0,1,K)
-        
+        reward_mat[:,0]=np.random.uniform(0,1,K)
+    else:   
         #### p(x)=2*x-x^2 F(x)=1-(1-x)^2  ####
         x1=np.random.uniform(0,1,K)
         reward_mat[:,0]=1-np.sqrt(1-x1) 
-        
-        ##### Truncnorm  #####
-        #reward_mat[:,0]=truncnorm(-0.5,0.5,0.5,1).rvs(K)
-    
-        # reward_mat[0:100,0]=np.random.uniform(0,0.5,100)
-        # reward_mat[100,0]=0.8
-        # reward_mat[101:K,0]=np.random.uniform(0.7,0.9,K-101)
     
     
     return reward_mat
@@ -293,7 +286,7 @@ def get_reward(r_mat,j,arm_type):
         n=len(j)
         return r_mat[j,0] + r_mat[j,1]*np.random.randn(n)
         #return np.random.normal(r_mat[j,0],r_mat[j,1])
-    elif arm_type==1:
+    else:
         return (np.random.uniform(0,1,len(j))<r_mat[j,0])*np.ones(len(j))
    
     
