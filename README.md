@@ -36,6 +36,7 @@ This code is for the paper "Graph Feedback Bandits with Similar Arms".
 ## Ballooning settings
  Compare  our proposed four algorithms: Double-UCB, Conservative-UCB, U-Double-UCB and U-Conservative-UCB.
  Modify parameters:
+ 
    (a) $\mathcal{P}$ is Gaussian  $\mathcal{N}(0,1)$.
    ```python
     param = {
