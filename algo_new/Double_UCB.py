@@ -83,7 +83,7 @@ def Double_UCB(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
         N_optimal[arm_ind] = N[arm_ind]       
         c_add_optimal[arm_ind]=c_add[arm_ind]
       
-    return reward, expect_reward, ch
+    return reward, expect_reward, ch, len(arm_ind)
 
 
 @jit(nopython=True)

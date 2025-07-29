@@ -9,6 +9,7 @@ from aux_func import get_reward_distribution,get_reward_distribution_native
 from param import param
 
 from algo_new.UCB_N import UCB_N
+from algo_new.Double_UCB import Double_UCB
 
 
 if __name__ == '__main__':
@@ -21,9 +22,13 @@ if __name__ == '__main__':
     
     color=['m','c','g']
     color_index=0
-    saved=True
+    saved=False
+    if arm_type == 1:
+        epsilon_list= [0.02,0.05,0.1]
+    else:
+        epsilon_list= [0.05,0.1,0.2]
     t1 = time.time()
-    for epsilon in [0.1,0.2]:
+    for epsilon in epsilon_list:
         
         r1 = 0
         r2 = 0
@@ -36,7 +41,7 @@ if __name__ == '__main__':
             for i in range(iter):
                 print("iter = {}".format(i))
                 reward_mat, r_opt, neighbor_init,change_arms_list = get_reward_distribution(arm_type,T, K, epsilon, i+seed)
-            
+
                 print("arms num: {} ,epsilon = {}".format(K,epsilon))
                 if arm_type==0:
                     print("Gaussian arms")
@@ -44,10 +49,18 @@ if __name__ == '__main__':
                 else:
                     print("Bernoulli arms")
                     p=1-(1-epsilon)**2
+                if i==0:
+                    _,_,_,ind_num=Double_UCB(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
+                    print("ind_num = ", ind_num)
                 rr1, e_r1, ch_p1 =  UCB_N(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
                 
-                reward_mat, r_opt, neighbor_init,change_arms_list = get_reward_distribution_native(arm_type,T, K, p, i+seed)
-                rr2, e_r2, ch_p2 = UCB_N(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
+                reward_mat1, r_opt,change_arms_list = get_reward_distribution_native(arm_type,T, K, i+seed)
+                #reward_mat1, r_opt,neighbor_init,change_arms_list = get_reward_distribution_native(arm_type,T, p,K, i+seed)
+                # if i==0:
+                #     _,_,_,ind_num=Double_UCB(T, reward_mat1, arm_type,neighbor_init, change_arms_list,i+seed)
+                #     print("ind_num1 = ", ind_num)
+                rr2, e_r2, ch_p2 = UCB_N(T, reward_mat1, arm_type,neighbor_init, change_arms_list,i+seed)
+               
                 
                 dpr1[i, :] = (r_opt - e_r1).cumsum()
                 dpr2[i, :] = (r_opt - e_r2).cumsum()
@@ -62,7 +75,7 @@ if __name__ == '__main__':
             cr2 = np.mean(dpr2, 0)
         
             print("UCB-N-native: {}\nUCB-N-similar: {}".format(
-                cr1[-1],cr2[-1]))
+                cr2[-1],cr1[-1]))
         
         #save data
         if saved==False:
@@ -88,7 +101,7 @@ if __name__ == '__main__':
         alpha = 0.05
         #low_bound,high_bound=st.t.interval(0.95,T-1,loc=np.mean(dpr1,0),scale=st.sem(dpr1))
         low_bound, high_bound = sms.DescrStatsW(dpr1).tconfint_mean(alpha=alpha)
-        plt.plot(xx1, cr1[xx1], '--'+color[color_index] , markerfacecolor='none', label=r'UCB-N $(\epsilon={})$'.format(epsilon))
+        plt.plot(xx1, cr1[xx1], '-'+color[color_index] + '*', markerfacecolor='none', label=r'UCB-N $(\epsilon={})$'.format(epsilon))
         plt.fill_between(xx2, low_bound[xx2], high_bound[xx2], alpha=0.5)
 
         # low_bound, high_bound = st.t.interval(0.95, T - 1, loc=np.mean(dpr7, 0), scale=st.sem(dpr7))
