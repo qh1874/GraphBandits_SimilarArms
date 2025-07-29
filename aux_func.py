@@ -81,7 +81,7 @@ def generate_data(arm_type,K,seed):
     reward_mat = np.zeros((K,2))
     if arm_type==0: #Gaussian
         reward_mat[:,1] = 1/2#np.random.uniform(0,1,K)
-        reward_mat[:,0]=np.random.randn(K)
+        reward_mat[:,0]= np.random.uniform(-3,3,K)#np.random.randn(K)
     elif arm_type==1: #Bernoulli
         reward_mat[:,1] = np.random.uniform(0,1,K)
         reward_mat[:,0]=np.random.uniform(0,1,K)
@@ -143,25 +143,7 @@ def get_reward_distribution_ball(arm_type,T,K,ep,seed):
     #         if i!=j and i in neighbor[j]:
     #             neighbor[i].append(j)
     # print("world")
-    '''
-    g=nx.Graph()
-    g.clear()
-    g.add_nodes_from(range(K))
-    edges=[]
-    for i in range(101):
-        for ii in neighbor[i]:
-            edges.append((i,ii))
-    g.add_edges_from(edges)
-    
-    #g, neighbor =generate_graph(K)
-    plt.figure(1)
-    pos=nx.spring_layout(g)
-    nx.draw(g,pos,with_labels=True)
-    #nx.draw_circular(g,with_labels=True)
-    plt.show()
-    '''
-    # for i in range(Ksum):
-    #     neighbor[i]=list(set(neighbor[i]))
+   
     
 
     return reward_mat,r_opt,neighbor,change_arms_list
@@ -193,31 +175,8 @@ def get_reward_distribution(arm_type,T,K,ep,seed):
             if j!=0:
                 neighbor[i].append(j-1)
     
-    # for i in range(K):
-    #     for j in range(K):
-    #         if i!=j and i in neighbor[j]:
-    #             neighbor[i].append(j)
     
-    '''
-    g=nx.Graph()
-    g.clear()
-    g.add_nodes_from(range(K))
-    edges=[]
-    for i in range(101):
-        for ii in neighbor[i]:
-            edges.append((i,ii))
-    g.add_edges_from(edges)
-    
-    #g, neighbor =generate_graph(K)
-    plt.figure(1)
-    pos=nx.spring_layout(g)
-    nx.draw(g,pos,with_labels=True)
-    #nx.draw_circular(g,with_labels=True)
-    plt.show()
-    '''
-    # for i in range(Ksum):
-    #     neighbor[i]=list(set(neighbor[i]))
-    
+   
 
     return reward_mat,r_opt,neighbor,change_arms_list
 
