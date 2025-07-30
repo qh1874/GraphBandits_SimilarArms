@@ -20,14 +20,16 @@ if __name__ == '__main__':
     iter = param['iter']
     arm_type=param['arm_type'] #0: Gaussian, 1: Bernoulli
     
-    color=['m','c','g']
+    #color=['m','c','g']
+    color=['m','k','b']
     color_index=0
-    saved=False
+    saved=True
     if arm_type == 1:
         epsilon_list= [0.02,0.05,0.1]
     else:
         epsilon_list= [0.05,0.1,0.2]
     t1 = time.time()
+    plt.figure(figsize=(8,6))
     for epsilon in epsilon_list:
         
         r1 = 0
@@ -40,7 +42,7 @@ if __name__ == '__main__':
         if saved==False:
             for i in range(iter):
                 print("iter = {}".format(i))
-                reward_mat, r_opt, neighbor_init,change_arms_list = get_reward_distribution(arm_type,T, K, epsilon, i+seed)
+                reward_mat, r_opt, neighbor_init,change_arms_list = get_reward_distribution(arm_type,T, K, epsilon, i+seed,0)
 
                 print("arms num: {} ,epsilon = {}".format(K,epsilon))
                 if arm_type==0:
@@ -54,7 +56,7 @@ if __name__ == '__main__':
                     print("ind_num = ", ind_num)
                 rr1, e_r1, ch_p1 =  UCB_N(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
                 
-                reward_mat1, r_opt,change_arms_list = get_reward_distribution_native(arm_type,T, K, i+seed)
+                reward_mat1, r_opt,change_arms_list = get_reward_distribution_native(arm_type,T, K, i+seed,0)
                 #reward_mat1, r_opt,neighbor_init,change_arms_list = get_reward_distribution_native(arm_type,T, p,K, i+seed)
                 # if i==0:
                 #     _,_,_,ind_num=Double_UCB(T, reward_mat1, arm_type,neighbor_init, change_arms_list,i+seed)
@@ -90,7 +92,7 @@ if __name__ == '__main__':
             dpr1=np.load("data_test_two_sta/dpr1_eps_{}_armtype_{}.npy".format(epsilon,arm_type))
             dpr2=np.load("data_test_two_sta/dpr2_eps_{}_armtype_{}.npy".format(epsilon,arm_type))
         
-        #plt.figure(2)
+       
         xx = np.arange(0, T)
         d = int(param['T'] / 20)
         xx1 = np.arange(0, T, d)
@@ -101,12 +103,12 @@ if __name__ == '__main__':
         alpha = 0.05
         #low_bound,high_bound=st.t.interval(0.95,T-1,loc=np.mean(dpr1,0),scale=st.sem(dpr1))
         low_bound, high_bound = sms.DescrStatsW(dpr1).tconfint_mean(alpha=alpha)
-        plt.plot(xx1, cr1[xx1], '-'+color[color_index] + '*', markerfacecolor='none', label=r'UCB-N $(\epsilon={})$'.format(epsilon))
+        plt.plot(xx1, cr1[xx1], '-'+color[color_index] + '*', markersize = 8, markerfacecolor='none', label=r'UCB-N $(\epsilon={})$'.format(epsilon))
         plt.fill_between(xx2, low_bound[xx2], high_bound[xx2], alpha=0.5)
 
         # low_bound, high_bound = st.t.interval(0.95, T - 1, loc=np.mean(dpr7, 0), scale=st.sem(dpr7))
         low_bound, high_bound = sms.DescrStatsW(dpr2).tconfint_mean(alpha=alpha)
-        plt.plot(xx1, cr2[xx1], '-' + color[color_index]+ 'o', markerfacecolor='none', label=r'UCB-N-Standard $(\epsilon={})$'.format(epsilon))
+        plt.plot(xx1, cr2[xx1], '-' + color[color_index]+ 'o',markersize = 8, markerfacecolor='none', label='UCB-N-Standard')
         plt.fill_between(xx2, low_bound[xx2], high_bound[xx2], alpha=0.5)
     
         color_index += 1 

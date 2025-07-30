@@ -75,13 +75,16 @@ def generate_graph1(T,K,m):
     
     
 @jit(nopython=True)
-def generate_data(arm_type,K,seed):
+def generate_data(arm_type,K,seed,task_type=1):
     np.random.seed(seed+1)
         
     reward_mat = np.zeros((K,2))
     if arm_type==0: #Gaussian
         reward_mat[:,1] = 1/2#np.random.uniform(0,1,K)
-        reward_mat[:,0]= np.random.uniform(-3,3,K)#np.random.randn(K)
+        if task_type==1:
+            reward_mat[:,0]= np.random.randn(K)
+        if task_type==0:
+            reward_mat[:,0]= np.random.uniform(-3,3,K)
     elif arm_type==1: #Bernoulli
         reward_mat[:,1] = np.random.uniform(0,1,K)
         reward_mat[:,0]=np.random.uniform(0,1,K)
@@ -149,13 +152,13 @@ def get_reward_distribution_ball(arm_type,T,K,ep,seed):
     return reward_mat,r_opt,neighbor,change_arms_list
 
 @jit(nopython=True)
-def get_reward_distribution(arm_type,T,K,ep,seed):
+def get_reward_distribution(arm_type,T,K,ep,seed,task_type=1):
     
     np.random.seed(seed)
     change_arms_list=np.zeros(T,dtype='int32')
     change_arms_list[0]=K
     #generate optimal rewards
-    reward_mat=generate_data(arm_type,K,seed)
+    reward_mat=generate_data(arm_type,K,seed,task_type)
     r_opt=np.zeros(T)
     r_opt=np.max(reward_mat[:,0])
     #generate neighbors
@@ -182,28 +185,28 @@ def get_reward_distribution(arm_type,T,K,ep,seed):
 
 @jit(nopython=True)
 def swap_rows(A, i, j):
-    temp = A[i].copy()  # 临时存储一行
+    temp = A[i].copy()  
     A[i] = A[j]
     A[j] = temp
     return A
 
 @jit(nopython=True)
-def get_reward_distribution_native(arm_type,T,K,seed):
+def get_reward_distribution_native(arm_type,T,K,seed,task_type=1):
     
     np.random.seed(seed)
     change_arms_list=np.zeros(T,dtype='int32')
     change_arms_list[0]=K
     #generate optimal rewards
-    reward_mat=generate_data(arm_type,K,seed)
+    reward_mat=generate_data(arm_type,K,seed,task_type)
     r_opt=np.zeros(T)
     r_opt=np.max(reward_mat[:,0])
     
     
-    # 随机生成 K 对不同的行索引
+    # Randomly generate 100 pairs of different row indices.
     num_swaps = 100
     rows = np.random.choice(100, size=(num_swaps, 2), replace=True)
 
-    # 执行行交换
+    # Perform row swapping to break the similarity structure.
     for i, j in rows:
         swap_rows(reward_mat,i,j)
     
