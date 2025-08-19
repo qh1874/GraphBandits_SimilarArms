@@ -8,7 +8,7 @@ import time
 from aux_func import get_reward_distribution,get_reward_distribution_ball
 from param import param
 
-from algo_new.Double_UCB import Double_UCB,C_UCB
+from algo_new.Double_UCB import Double_UCB,C_UCB,C_UCB_WithGraph
 from algo_new.UCB_N import UCB_N
 import multiprocessing as mp
 
@@ -19,7 +19,7 @@ if __name__ == '__main__':
     epsilon=param['epsilon']
     iter = param['iter']
     arm_type=param['arm_type'] #0: Gaussian, 1: Bernoulli
-    saved=True
+    saved=False
     r1 = 0
     r2 = 0
     r3 = 0
@@ -42,49 +42,58 @@ if __name__ == '__main__':
                 print("Gaussian arms")
             else:
                 print("Bernoulli arms")
-        
-            rr1, e_r1, ch_p1 =  Double_UCB(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
+            rr4, e_r4, ch_p4 = C_UCB_WithGraph(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
+            rr1, e_r1, ch_p1,_ =  Double_UCB(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
             rr3, e_r3, ch_p3 =  UCB_N(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
             rr2, e_r2, ch_p2 = C_UCB(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
+           
         
             dpr1[i, :] = (r_opt - e_r1).cumsum()
             dpr2[i, :] = (r_opt - e_r2).cumsum()
             dpr3[i, :] = (r_opt - e_r3).cumsum()
+            dpr4[i, :] = (r_opt - e_r4).cumsum()
         
             r1 += e_r1
             r2 += e_r2
             r3 += e_r3
+            r4 += e_r4
       
     t2 = time.time()
     print("time  = ", t2 - t1)
     r1 = r1 / iter
     r2 = r2 / iter
     r3 = r3 / iter
+    r4 = r4 / iter
    
     cr1 = np.mean(dpr1, 0)
     cr2 = np.mean(dpr2, 0)
     cr3 = np.mean(dpr3, 0)
+    cr4 = np.mean(dpr4, 0)
   
-    print("Double-UCB: {}\nC-UCB: {}\nUCB-N: {}".format(
-        cr1[-1],cr2[-1], cr3[-1]))
+    print("Double-UCB: {}\nC-UCB: {}\nUCB-N: {}\nC-UCB-WithGraph:{}".format(
+        cr1[-1],cr2[-1], cr3[-1],cr4[-1]))
     
     #save data
     if saved==False:
         np.save("data_test_stationary/cr1_armtype_{}.npy".format(arm_type),cr1)
         np.save("data_test_stationary/cr2_armtype_{}.npy".format(arm_type),cr2)
         np.save("data_test_stationary/cr3_armtype_{}.npy".format(arm_type),cr3)
+        np.save("data_test_stationary/cr4_armtype_{}.npy".format(arm_type),cr4)
         np.save("data_test_stationary/dpr1_armtype_{}.npy".format(arm_type),dpr1)
         np.save("data_test_stationary/dpr2_armtype_{}.npy".format(arm_type),dpr2)
         np.save("data_test_stationary/dpr3_armtype_{}.npy".format(arm_type),dpr3)
+        np.save("data_test_stationary/dpr4_armtype_{}.npy".format(arm_type),dpr4)
         
     #load data
     if saved==True:
         cr1=np.load("data_test_stationary/cr1_armtype_{}.npy".format(arm_type))
         cr2=np.load("data_test_stationary/cr2_armtype_{}.npy".format(arm_type))
         cr3=np.load("data_test_stationary/cr3_armtype_{}.npy".format(arm_type))
+        cr4=np.load("data_test_stationary/cr4_armtype_{}.npy".format(arm_type))
         dpr1=np.load("data_test_stationary/dpr1_armtype_{}.npy".format(arm_type))
         dpr2=np.load("data_test_stationary/dpr2_armtype_{}.npy".format(arm_type))
         dpr3=np.load("data_test_stationary/dpr3_armtype_{}.npy".format(arm_type))
+        dpr4=np.load("data_test_stationary/dpr4_armtype_{}.npy".format(arm_type))
         
     
     plt.figure(2)
@@ -104,6 +113,10 @@ if __name__ == '__main__':
     # # low_bound, high_bound = st.t.interval(0.95, T - 1, loc=np.mean(dpr7, 0), scale=st.sem(dpr7))
     low_bound, high_bound = sms.DescrStatsW(dpr2).tconfint_mean(alpha=alpha)
     plt.plot(xx1, cr2[xx1], '-ms', markerfacecolor='none', label='C-UCB')
+    plt.fill_between(xx2, low_bound[xx2], high_bound[xx2], alpha=0.5)
+    
+    low_bound, high_bound = sms.DescrStatsW(dpr4).tconfint_mean(alpha=alpha)
+    plt.plot(xx1, cr4[xx1], '-co', markerfacecolor='none', label='C-UCB-W')
     plt.fill_between(xx2, low_bound[xx2], high_bound[xx2], alpha=0.5)
     
     #low_bound, high_bound = st.t.interval(0.95, T - 1, loc=np.mean(dpr2, 0), scale=st.sem(dpr2))

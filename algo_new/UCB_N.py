@@ -15,7 +15,8 @@ def UCB_N(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
     ch = np.zeros(T)
     neighbor=deepcopy(neighbor_init,len(neighbor_init))
     arms_num=0
-    cons=np.sqrt(np.log(np.sqrt(2)*T**2))
+    num=change_arms_list[0]
+    cons=np.sqrt(np.log(np.sqrt(2)*T))
     #for t in tqdm(range(T),desc="UCB_N: "):
     for t in range(T):
         
