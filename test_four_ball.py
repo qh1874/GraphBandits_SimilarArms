@@ -20,7 +20,7 @@ if __name__ == '__main__':
     epsilon=param['epsilon']
     iter = param['iter']
     arm_type=param['arm_type'] #0: Gaussian, 1: Bernoulli,2: Bernoulli (half-triangle distribution for Ballooning settings
-    saved=True
+    saved=False
     t1 = time.time()
   
     r1 = 0
@@ -37,6 +37,7 @@ if __name__ == '__main__':
     current_time = datetime.now()
     formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
     print("datetime:", formatted_time)
+    plt.figure(figsize=(8,6))
     if saved==False:
         for i in range(iter):
             t11=time.time()
@@ -111,20 +112,20 @@ if __name__ == '__main__':
     alpha = 0.05
     #low_bound,high_bound=st.t.interval(0.95,T-1,loc=np.mean(dpr1,0),scale=st.sem(dpr1))
     low_bound, high_bound = sms.DescrStatsW(dpr1).tconfint_mean(alpha=alpha)
-    plt.plot(xx1, cr1[xx1], '-m^' , markerfacecolor='none', label='D-UCB')
+    plt.plot(xx1, cr1[xx1], '-m^' ,markersize = 8, markerfacecolor='none', label='D-UCB')
     plt.fill_between(xx2, low_bound[xx2], high_bound[xx2], alpha=0.5)
 
     # low_bound, high_bound = st.t.interval(0.95, T - 1, loc=np.mean(dpr7, 0), scale=st.sem(dpr7))
     low_bound, high_bound = sms.DescrStatsW(dpr2).tconfint_mean(alpha=alpha)
-    plt.plot(xx1, cr2[xx1], '-co', markerfacecolor='none', label='C-UCB')
+    plt.plot(xx1, cr2[xx1], '-co',markersize = 8, markerfacecolor='none', label='C-UCB')
     plt.fill_between(xx2, low_bound[xx2], high_bound[xx2], alpha=0.5)
     
     low_bound, high_bound = sms.DescrStatsW(dpr3).tconfint_mean(alpha=alpha)
-    plt.plot(xx1, cr3[xx1], '-g*', markerfacecolor='none', label='U-DUCB')
+    plt.plot(xx1, cr3[xx1], '-g*', markersize = 8, markerfacecolor='none', label='U-DUCB')
     plt.fill_between(xx2, low_bound[xx2], high_bound[xx2], alpha=0.5)
     
     low_bound, high_bound = sms.DescrStatsW(dpr4).tconfint_mean(alpha=alpha)
-    plt.plot(xx1, cr4[xx1], '-bd', markerfacecolor='none', label='U-CUCB')
+    plt.plot(xx1, cr4[xx1], '-bd', markersize = 8, markerfacecolor='none', label='U-CUCB')
     plt.fill_between(xx2, low_bound[xx2], high_bound[xx2], alpha=0.5)
 
     t2 = time.time()

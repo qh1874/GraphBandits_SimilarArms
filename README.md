@@ -16,7 +16,7 @@ This code is for the paper "Graph Feedback Bandits with Similar Arms".
     ```
     Then run the file:
     ```
-    python test_stationary.py
+    python test_two_sta.py
     ```
 2.  Compare the performance of UCB-N, Double-UCB, and Conservative-UCB algorithms.
     Modify parameters:
@@ -31,7 +31,7 @@ This code is for the paper "Graph Feedback Bandits with Similar Arms".
     ```
     Then run the file:
     ```bash
-    python test_two_sta.py
+    python test_stationary.py
     ```
 ## Ballooning settings
  Compare  our proposed four algorithms: Double-UCB, Conservative-UCB, U-Double-UCB and U-Conservative-UCB.

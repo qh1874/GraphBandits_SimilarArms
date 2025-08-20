@@ -19,7 +19,7 @@ if __name__ == '__main__':
     epsilon=param['epsilon']
     iter = param['iter']
     arm_type=param['arm_type'] #0: Gaussian, 1: Bernoulli
-    saved=False
+    saved=True
     r1 = 0
     r2 = 0
     r3 = 0
@@ -33,16 +33,17 @@ if __name__ == '__main__':
     dpr5 = np.zeros((iter, T))
     seed = 0
     t1 = time.time()
+    plt.figure(figsize=(8,6))
     if saved==False:
         for i in range(iter):
             print("iter = {}".format(i))
-            reward_mat, r_opt, neighbor_init,change_arms_list = get_reward_distribution(arm_type,T, K, epsilon, i+seed)
+            reward_mat, r_opt, neighbor_init,change_arms_list,adj = get_reward_distribution(arm_type,T, K, epsilon, i+seed,0)
             print("arms num: {} ,epsilon = {}".format(K,epsilon))
             if arm_type==0:
                 print("Gaussian arms")
             else:
                 print("Bernoulli arms")
-            rr4, e_r4, ch_p4 = C_UCB_WithGraph(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
+            rr4, e_r4, ch_p4 = C_UCB_WithGraph(T, reward_mat, arm_type,neighbor_init, change_arms_list,adj,i+seed)
             rr1, e_r1, ch_p1,_ =  Double_UCB(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
             rr3, e_r3, ch_p3 =  UCB_N(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
             rr2, e_r2, ch_p2 = C_UCB(T, reward_mat, arm_type,neighbor_init, change_arms_list,i+seed)
@@ -96,7 +97,7 @@ if __name__ == '__main__':
         dpr4=np.load("data_test_stationary/dpr4_armtype_{}.npy".format(arm_type))
         
     
-    plt.figure(2)
+    #plt.figure(2)
     xx = np.arange(0, T)
     d = int(param['T'] / 20)
     xx1 = np.arange(0, T, d)
@@ -107,21 +108,21 @@ if __name__ == '__main__':
     alpha = 0.05
     #low_bound,high_bound=st.t.interval(0.95,T-1,loc=np.mean(dpr1,0),scale=st.sem(dpr1))
     low_bound, high_bound = sms.DescrStatsW(dpr1).tconfint_mean(alpha=alpha)
-    plt.plot(xx1, cr1[xx1], '-k^', markerfacecolor='none', label='Double-UCB')
+    plt.plot(xx1, cr1[xx1], '-k^', markersize = 8, markerfacecolor='none', label='Double-UCB')
     plt.fill_between(xx2, low_bound[xx2], high_bound[xx2], alpha=0.5)
 
     # # low_bound, high_bound = st.t.interval(0.95, T - 1, loc=np.mean(dpr7, 0), scale=st.sem(dpr7))
     low_bound, high_bound = sms.DescrStatsW(dpr2).tconfint_mean(alpha=alpha)
-    plt.plot(xx1, cr2[xx1], '-ms', markerfacecolor='none', label='C-UCB')
+    plt.plot(xx1, cr2[xx1], '-ms', markersize = 8,markerfacecolor='none', label='C-UCB')
     plt.fill_between(xx2, low_bound[xx2], high_bound[xx2], alpha=0.5)
     
     low_bound, high_bound = sms.DescrStatsW(dpr4).tconfint_mean(alpha=alpha)
-    plt.plot(xx1, cr4[xx1], '-co', markerfacecolor='none', label='C-UCB-W')
+    plt.plot(xx1, cr4[xx1], '-co',markersize = 8, markerfacecolor='none', label='C-UCB-Graph')
     plt.fill_between(xx2, low_bound[xx2], high_bound[xx2], alpha=0.5)
     
     #low_bound, high_bound = st.t.interval(0.95, T - 1, loc=np.mean(dpr2, 0), scale=st.sem(dpr2))
     low_bound, high_bound = sms.DescrStatsW(dpr3).tconfint_mean(alpha=alpha)
-    plt.plot(xx1, cr3[xx1], '-bd', markerfacecolor='none', label='UCB-N')
+    plt.plot(xx1, cr3[xx1], '-bd', markersize = 8, markerfacecolor='none', label='UCB-N')
     plt.fill_between(xx2, low_bound[xx2], high_bound[xx2], alpha=0.5)
 
     plt.legend(fontsize=10)

@@ -8,6 +8,7 @@ from numba import jit
 from numba.typed import List
 import numba
 
+#useless, pending deletion
 def generate_graph(K):
     g=nx.Graph()
     g.clear()
@@ -51,7 +52,8 @@ def generate_graph(K):
     g.add_edges_from(edges)
     
     return g,neighbor
-    
+
+#useless, pending deletion 
 def generate_graph1(T,K,m):
     
     num=int(T/m)
@@ -73,16 +75,44 @@ def generate_graph1(T,K,m):
         
     return neighbor
     
+
+@jit(nopython=True)
+def neighbor_to_adj_symmetric(typed_neighbor, n):
+    """
+    若你的图是无向图并希望 memastikan 对称性，使用这个版本。
+    """
+    neighbor=deepcopy(typed_neighbor,len(typed_neighbor))
+    arms_num =0
+    for _ in range(n):
+        arms_num += 1
+        
+        neigh1=neighbor[arms_num-1]
+        for arm in set(neigh1):                 
+            if (arms_num-1) not in neighbor[arm]:
+                neighbor[arm].append(arms_num-1)
+
     
+    adj = np.zeros((n, n), dtype=np.bool_)
+    for i in range(n):
+        nbrs = neighbor[i]
+        for t in range(len(nbrs)):
+            j = nbrs[t]
+            adj[i, j] = True
+            adj[j, i] = True  # 强制对称
+    # 自环
+    for i in range(n):
+        adj[i, i] = True
+    return adj
+
 @jit(nopython=True)
 def generate_data(arm_type,K,seed,task_type=1):
     np.random.seed(seed+1)
         
     reward_mat = np.zeros((K,2))
     if arm_type==0: #Gaussian
-        reward_mat[:,1] = 1/2#np.random.uniform(0,1,K)
+        reward_mat[:,1] = 1/2
         if task_type==1:
-            reward_mat[:,0]= np.random.randn(K)
+            reward_mat[:,0]= 1*np.random.randn(K)
         if task_type==0:
             reward_mat[:,0]= np.random.uniform(-3,3,K)
     elif arm_type==1: #Bernoulli
@@ -178,10 +208,10 @@ def get_reward_distribution(arm_type,T,K,ep,seed,task_type=1):
             if j!=0:
                 neighbor[i].append(j-1)
     
-    
-   
+ 
+    adj = neighbor_to_adj_symmetric(neighbor,K)
 
-    return reward_mat,r_opt,neighbor,change_arms_list
+    return reward_mat,r_opt,neighbor,change_arms_list,adj
 
 @jit(nopython=True)
 def swap_rows(A, i, j):

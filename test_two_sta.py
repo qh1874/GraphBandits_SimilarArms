@@ -23,7 +23,7 @@ if __name__ == '__main__':
     #color=['m','c','g']
     color=['m','k','b']
     color_index=0
-    saved=True
+    saved=False
     if arm_type == 1:
         epsilon_list= [0.02,0.05,0.1]
     else:
@@ -42,7 +42,7 @@ if __name__ == '__main__':
         if saved==False:
             for i in range(iter):
                 print("iter = {}".format(i))
-                reward_mat, r_opt, neighbor_init,change_arms_list = get_reward_distribution(arm_type,T, K, epsilon, i+seed,0)
+                reward_mat, r_opt, neighbor_init,change_arms_list,_ = get_reward_distribution(arm_type,T, K, epsilon, i+seed,0)
 
                 print("arms num: {} ,epsilon = {}".format(K,epsilon))
                 if arm_type==0:
