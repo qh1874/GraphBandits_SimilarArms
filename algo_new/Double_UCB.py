@@ -48,7 +48,7 @@ def Double_UCB(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
     ch = np.zeros(T)
     neighbor=deepcopy(neighbor_init,len(neighbor_init))
     arms_num=0
-    cons=np.sqrt(np.log(np.sqrt(2)*T))
+    cons=np.sqrt(np.log(np.sqrt(2)*T**2))
     #for t in tqdm(range(T),desc="Double-UCB: "):
     for t in range(T):
         
@@ -130,7 +130,7 @@ def C_UCB(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
     ch = np.zeros(T)
     neighbor=deepcopy(neighbor_init,len(neighbor_init))
     arms_num=0
-    cons=np.sqrt(np.log(np.sqrt(2)*T))
+    cons=np.sqrt(np.log(np.sqrt(2)*T**2))
     #for t in tqdm(range(T),desc="C-UCB: "):
     for t in range(T):
         
@@ -272,7 +272,7 @@ def C_UCB_WithGraph(T,reward_mat,arm_type,neighbor_init,change_arms_list,adj,see
     ch = np.zeros(T)
     neighbor=deepcopy(neighbor_init,len(neighbor_init))
     arms_num=0
-    cons=np.sqrt(np.log(np.sqrt(2)*T))
+    cons=np.sqrt(np.log(np.sqrt(2)*T**2))
     #for t in tqdm(range(T),desc="C-UCB: "):
     for t in range(T):
         

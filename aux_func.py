@@ -112,7 +112,7 @@ def generate_data(arm_type,K,seed,task_type=1):
     if arm_type==0: #Gaussian
         reward_mat[:,1] = 1/2
         if task_type==1:
-            reward_mat[:,0]= 1*np.random.randn(K)
+            reward_mat[:,0]= np.random.randn(K)
         if task_type==0:
             reward_mat[:,0]= np.random.uniform(-3,3,K)
     elif arm_type==1: #Bernoulli

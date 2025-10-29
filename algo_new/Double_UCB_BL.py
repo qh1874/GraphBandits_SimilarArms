@@ -137,8 +137,8 @@ def C_UCB_BL(T,reward_mat,arm_type,neighbor_init,change_arms_list,seed):
         j1=arm_ind[np.argmax(c_add_optimal[arm_ind])]
         temp_nei=np.array(list(neighbor[j1]))
         j=temp_nei[np.argmax(c_sub[temp_nei])]
-        #j=neighbor[j1][np.argmax(c_sub[neighbor[j1]])]
-        #j=neighbor[j1][np.argmax(X_hat[neighbor[j1]])]
+       
+        #j=temp_nei[np.argmax(X_hat[temp_nei])]
         if t%10000==0:
             a=0
         neigh=np.array(list(neighbor[j]))

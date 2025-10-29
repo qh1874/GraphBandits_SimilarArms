@@ -19,7 +19,7 @@ if __name__ == '__main__':
     epsilon=param['epsilon']
     iter = param['iter']
     arm_type=param['arm_type'] #0: Gaussian, 1: Bernoulli
-    saved=True
+    saved=False
     r1 = 0
     r2 = 0
     r3 = 0
